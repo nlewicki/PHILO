@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 10:58:15 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/07/22 11:44:47 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/07/22 12:53:00 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,8 +88,9 @@ void	philo_eat(t_philo *philo, size_t start)
 	lock_print(philo, "has taken a fork", get_current_time() - start);
 	pthread_mutex_lock(&philo->next->fork);
 	lock_print(philo, "has taken a fork", get_current_time() - start);
+	philo->last_meal = get_current_time();
 	lock_print(philo, "is eating", get_current_time() - start);
-	ft_usleep(philo->data->time_to_die);
+	ft_usleep(philo->data->time_to_eat);
 	lock_print(philo, "is sleeping", get_current_time() - start);
 	pthread_mutex_unlock(&philo->fork);
 	pthread_mutex_unlock(&philo->next->fork);
@@ -116,6 +117,7 @@ void	*routine(void *arg)
 
 	return (NULL);
 }
+
 
 void	init_philo(int argc, char *argv[], t_data *data, t_philo **philo_list)
 {

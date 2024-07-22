@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 10:58:25 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/07/22 11:47:09 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/07/22 12:48:35 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ typedef struct s_philo
 {
 	pthread_t		thread;
 	int				id;
-	long			last_meal;
+	size_t			last_meal;
 	pthread_mutex_t	fork;
 	t_data			*data;
 	struct s_philo	*next;
