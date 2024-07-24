@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 10:58:15 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/07/22 12:53:00 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/07/23 14:02:25 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void	init_data(int argc, char *argv[], t_data *data)
 	data->time_to_die = atoi(argv[2]);
 	data->time_to_eat = atoi(argv[3]);
 	data->time_to_sleep = atoi(argv[4]);
+	data->alive = 0;
 	if (argc == 6)
 		data->nb_time_each_philo_must_eat = atoi(argv[5]);
 	else
@@ -70,6 +71,7 @@ t_philo *create_philo(int id, t_data *data)
 		return (NULL);
 	new_philo->id = id;
 	new_philo->data = data;
+	new_philo->last_meal = get_current_time();
 	pthread_mutex_init(&new_philo->fork, NULL);
 	new_philo->next = NULL;
 	return (new_philo);
@@ -108,8 +110,9 @@ void	*routine(void *arg)
 		lock_print(philo, "is thinking", get_current_time() - start);
 		ft_usleep(philo->data->time_to_sleep);
 	}
-	while (i < 4)
+	while (1 && meals && routine_stopper != 0)
 	{
+
 		philo_eat(philo, start);
 		ft_usleep(philo->data->time_to_eat);
 		i++;
@@ -154,6 +157,54 @@ void	init_philo(int argc, char *argv[], t_data *data, t_philo **philo_list)
 		if(current == *philo_list)
 			break;
 	}
+	while (1)
+	{
+
+	}
+}
+
+int	check_philo(t_philo *philo, size_t start, int *alive)
+{
+	if (philo->data->nb_time_each_philo_must_eat)
+		(*alive)++;
+	if (get_current_time() - philo->last_meal > philo->data->time_to_die)
+	{
+		philo->data->alive = 1;
+		lock_print(philo, "died", get_current_time() - start);
+		return (1);
+	}
+	return (0);
+}
+
+int watcher(t_philo *philo)
+{
+	int routine_stopper = 0; ... in data
+	t_philo *current = philo;
+	if (philo->data->alive == 1)
+		routine_stopper = 0;
+	return (0);
+}
+
+int	watcher_routine(void *arg)
+{
+	t_philo *philo = (t_philo *)arg;
+	t_philo *current = philo;
+
+	while (alive)
+	{
+		alive = 0;
+		size_t start = get_current_time();
+		current = philo;
+		while (current)
+		{
+			if (check_philo(current, start, &alive))
+				return (1);
+			current = current->next;
+			if(current == philo)
+				break;
+		}
+	}
+	return (0);
 }
 
 int	main(int argc, char *argv[])
@@ -165,6 +216,10 @@ int	main(int argc, char *argv[])
 		return (0);
 	init_data(argc, argv, &data);
 	init_philo(argc, argv, &data, &philo_list);
+	if (watcher_routine(philo_list))
+	{
+		return (0);
+	}
 
 	t_philo *current = philo_list;
 	while (current)
