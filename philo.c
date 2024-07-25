@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 10:58:15 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/07/24 11:06:15 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/07/25 09:42:53 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,13 +93,23 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
+int	check_health(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->data->lock);
+	if (philo->data->alive == 1)
+		return (pthread_mutex_unlock(&philo->data->lock), 1);
+	pthread_mutex_unlock(&philo->data->lock);
+	return (0);
+}
+
 void	print_msg(t_philo *philo, char *str)
 {
 	size_t	time;
 
 	time = get_current_time() - philo->start_time;
 	pthread_mutex_lock(&philo->data->print);
-	printf("%zu %d %s\n", time, philo->id, str);
+	if (check_health(philo))
+		printf("%zu %d %s\n", time, philo->id, str);
 	pthread_mutex_unlock(&philo->data->print);
 }
 
@@ -157,15 +167,6 @@ void	philo_think(t_philo *philo)
 	print_msg(philo, "is thinking");
 }
 
-int	check_health(t_philo *philo)
-{
-	pthread_mutex_lock(&philo->data->lock);
-	if (philo->data->alive == 1)
-		return (pthread_mutex_unlock(&philo->data->lock), 1);
-	pthread_mutex_unlock(&philo->data->lock);
-	return (0);
-}
-
 void	*routine(void *arg)
 {
 	t_philo	*philo;
@@ -180,7 +181,7 @@ void	*routine(void *arg)
 	{
 		philo_eat(philo);
 		philo_sleep(philo);
-		// philo_think(philo);
+		philo_think(philo);
 	}
 	return (NULL);
 }
@@ -228,8 +229,9 @@ int	check_philo(t_philo *philo)
 {
 	if (get_current_time() - philo->last_meal >= philo->data->time_to_die)
 	{
-		philo->data->alive = 0;
+
 		print_msg(philo, "\033[31mdied\033[0m");
+		philo->data->alive = 0;
 		return (1);
 	}
 	return (0);
