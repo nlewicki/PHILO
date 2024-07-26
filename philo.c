@@ -6,11 +6,13 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 10:58:15 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/07/25 09:42:53 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/07/26 10:50:10 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	print_msg(t_philo *philo, char *str);
 
 int	ft_atoi(const char *str)
 {
@@ -102,13 +104,22 @@ int	check_health(t_philo *philo)
 	return (0);
 }
 
+int	check_meals(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->data->lock);
+	if (philo->data->nb_time_each_philo_must_eat != -1
+		&& philo->data->total_meals <= 0)
+		return (pthread_mutex_unlock(&philo->data->lock), 0);
+	return (pthread_mutex_unlock(&philo->data->lock), 1);
+}
+
 void	print_msg(t_philo *philo, char *str)
 {
 	size_t	time;
 
 	time = get_current_time() - philo->start_time;
 	pthread_mutex_lock(&philo->data->print);
-	if (check_health(philo))
+	if (check_health(philo) && check_meals(philo))
 		printf("%zu %d %s\n", time, philo->id, str);
 	pthread_mutex_unlock(&philo->data->print);
 }
@@ -121,9 +132,15 @@ void	init_data(int argc, char *argv[], t_data *data)
 	data->time_to_sleep = ft_atoi(argv[4]);
 	data->alive = 1;
 	if (argc == 6)
+	{
 		data->nb_time_each_philo_must_eat = ft_atoi(argv[5]);
+		data->total_meals = data->nb_time_each_philo_must_eat * data->nb_philo;
+	}
 	else
+	{
 		data->nb_time_each_philo_must_eat = -1;
+		data->total_meals = -1;
+	}
 	pthread_mutex_init(&data->print, NULL);
 }
 
@@ -143,6 +160,15 @@ t_philo	*create_philo(int id, t_data *data)
 	return (new_philo);
 }
 
+void	decrement_meals(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->data->lock);
+	if (philo->data->nb_time_each_philo_must_eat != -1
+		&& philo->data->total_meals > 0)
+		philo->data->total_meals--;
+	pthread_mutex_unlock(&philo->data->lock);
+}
+
 void	philo_eat(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->fork);
@@ -154,6 +180,7 @@ void	philo_eat(t_philo *philo)
 	ft_usleep(philo->data->time_to_eat);
 	pthread_mutex_unlock(&philo->fork);
 	pthread_mutex_unlock(&philo->next->fork);
+	decrement_meals(philo);
 }
 
 void	philo_sleep(t_philo *philo)
@@ -177,7 +204,8 @@ void	*routine(void *arg)
 		print_msg(philo, "is thinking");
 		ft_usleep(philo->data->time_to_eat / 2);
 	}
-	while (check_health(philo) && philo->data->nb_philo > 1)
+	while (check_health(philo) && philo->data->nb_philo > 1
+		&& check_meals(philo))
 	{
 		philo_eat(philo);
 		philo_sleep(philo);
@@ -185,6 +213,11 @@ void	*routine(void *arg)
 	}
 	return (NULL);
 }
+
+// int create_and_link_philos(t_data *data, t_philo **philo_list)
+// {
+
+// }
 
 void	init_philo(int argc, char *argv[], t_data *data, t_philo **philo_list)
 {
@@ -229,7 +262,6 @@ int	check_philo(t_philo *philo)
 {
 	if (get_current_time() - philo->last_meal >= philo->data->time_to_die)
 	{
-
 		print_msg(philo, "\033[31mdied\033[0m");
 		philo->data->alive = 0;
 		return (1);
@@ -257,19 +289,11 @@ int	watcher_routine(t_philo *philo)
 	return (0);
 }
 
-int	main(int argc, char *argv[])
+void	join_and_destroy(t_philo *philo_list, t_data data)
 {
-	t_data	data;
 	t_philo	*current;
 	t_philo	*tmp;
-	t_philo	*philo_list;
 
-	philo_list = NULL;
-	if (check_input(argc, argv))
-		return (0);
-	init_data(argc, argv, &data);
-	init_philo(argc, argv, &data, &philo_list);
-	watcher_routine(philo_list);
 	current = philo_list;
 	while (current)
 	{
@@ -289,5 +313,19 @@ int	main(int argc, char *argv[])
 			break ;
 	}
 	pthread_mutex_destroy(&data.print);
+}
+
+int	main(int argc, char *argv[])
+{
+	t_data	data;
+	t_philo	*philo_list;
+
+	philo_list = NULL;
+	if (check_input(argc, argv))
+		return (0);
+	init_data(argc, argv, &data);
+	init_philo(argc, argv, &data, &philo_list);
+	watcher_routine(philo_list);
+	join_and_destroy(philo_list, data);
 	return (0);
 }
