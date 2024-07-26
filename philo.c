@@ -6,13 +6,11 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 10:58:15 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/07/26 10:55:29 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/07/26 11:06:16 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-void	print_msg(t_philo *philo, char *str);
 
 int	ft_atoi(const char *str)
 {
