@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 10:58:15 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/07/26 10:50:10 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/07/26 10:55:29 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,16 +214,10 @@ void	*routine(void *arg)
 	return (NULL);
 }
 
-// int create_and_link_philos(t_data *data, t_philo **philo_list)
-// {
-
-// }
-
-void	init_philo(int argc, char *argv[], t_data *data, t_philo **philo_list)
+int	create_and_link_philos(t_data *data, t_philo **philo_list,
+	t_philo *current, t_philo *tmp)
 {
 	int		i;
-	t_philo	*current;
-	t_philo	*tmp;
 	t_philo	*new_philo;
 
 	i = 1;
@@ -238,7 +232,7 @@ void	init_philo(int argc, char *argv[], t_data *data, t_philo **philo_list)
 				free(*philo_list);
 				*philo_list = tmp;
 			}
-			return ;
+			return (-1);
 		}
 		if (!*philo_list)
 			*philo_list = new_philo;
@@ -247,7 +241,16 @@ void	init_philo(int argc, char *argv[], t_data *data, t_philo **philo_list)
 		current = new_philo;
 		i++;
 	}
-	current->next = *philo_list;
+	return (current->next = *philo_list, 0);
+}
+
+void	init_philo(int argc, char *argv[], t_data *data, t_philo **philo_list)
+{
+	t_philo	*current;
+	t_philo	*tmp;
+
+	if (create_and_link_philos(data, philo_list, current, tmp) == -1)
+		return ;
 	current = *philo_list;
 	while (current)
 	{
