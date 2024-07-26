@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 10:58:25 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/07/26 11:09:27 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/07/26 12:36:17 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,11 @@
 # include <pthread.h>
 # include <sys/time.h>
 
-
-
 typedef struct s_data
 {
 	int				alive;
 	int				nb_philo;
-	int				time_to_die;
+	unsigned long	time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_time_each_philo_must_eat;
@@ -46,13 +44,13 @@ typedef struct s_philo
 
 }					t_philo;
 
-int	ft_atoi(const char *str);
+int		ft_atoi(const char *str);
 size_t	get_current_time(void);
-int	ft_usleep(size_t milliseconds);
-int	check_input(int argc, char *argv[]);
-int	ft_strncmp(const char *s1, const char *s2, size_t n);
-int	check_health(t_philo *philo);
-int	check_meals(t_philo *philo);
+int		ft_usleep(size_t milliseconds);
+int		check_input(int argc, char *argv[]);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
+int		check_health(t_philo *philo);
+int		check_meals(t_philo *philo);
 void	print_msg(t_philo *philo, char *str);
 void	init_data(int argc, char *argv[], t_data *data);
 t_philo	*create_philo(int id, t_data *data);
@@ -61,11 +59,11 @@ void	philo_eat(t_philo *philo);
 void	philo_sleep(t_philo *philo);
 void	philo_think(t_philo *philo);
 void	*routine(void *arg);
-int	create_and_link_philos(t_data *data, t_philo **philo_list,
-	t_philo *current, t_philo *tmp);
-void	init_philo(int argc, char *argv[], t_data *data, t_philo **philo_list);
-int	check_philo(t_philo *philo);
-int	watcher_routine(t_philo *philo);
+int		create_and_link_philos(t_data *data, t_philo **philo_list,
+			t_philo *current, t_philo *tmp);
+void	init_philo(t_data *data, t_philo **philo_list);
+int		check_philo(t_philo *philo);
+int		watcher_routine(t_philo *philo);
 void	join_and_destroy(t_philo *philo_list, t_data data);
 
 #endif
