@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 12:34:55 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/07/26 12:49:26 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/07/28 18:52:36 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,14 @@ int	check_meals(t_philo *philo)
 	pthread_mutex_lock(&philo->data->lock);
 	if (philo->data->nb_time_each_philo_must_eat != -1
 		&& philo->data->total_meals <= 0)
-		return (pthread_mutex_unlock(&philo->data->lock), 0);
+	{
+		pthread_mutex_lock(&philo->data->eating);
+		philo->data->philos_done_eating++;
+		pthread_mutex_unlock(&philo->data->eating);
+		if (philo->data->nb_philo == philo->data->philos_done_eating)
+			philo->data->alive = 0;
+		return (pthread_mutex_unlock(&philo->data->lock), 1);
+	}
 	return (pthread_mutex_unlock(&philo->data->lock), 1);
 }
 

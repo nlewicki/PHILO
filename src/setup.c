@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 12:32:22 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/07/26 12:49:20 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/07/28 18:40:00 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ void	init_data(int argc, char *argv[], t_data *data)
 	{
 		data->nb_time_each_philo_must_eat = ft_atoi(argv[5]);
 		data->total_meals = data->nb_time_each_philo_must_eat * data->nb_philo;
+		data->philos_done_eating = 0;
 	}
 	else
 	{
