@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 12:29:33 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/07/26 12:49:24 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/07/29 12:12:07 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,16 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
+void	destory_mutex(t_data *data)
+{
+	pthread_mutex_destroy(&data->print);
+	pthread_mutex_destroy(&data->lock);
+	pthread_mutex_destroy(&data->eating);
+	pthread_mutex_destroy(&data->alive_lock);
+	pthread_mutex_destroy(&data->check);
+	pthread_mutex_destroy(&data->time);
+}
+
 void	join_and_destroy(t_philo *philo_list, t_data data)
 {
 	t_philo	*current;
@@ -84,7 +94,9 @@ void	join_and_destroy(t_philo *philo_list, t_data data)
 	current = philo_list;
 	while (current)
 	{
+		pthread_mutex_lock(&current->thread_lock);
 		pthread_join(current->thread, NULL);
+		pthread_mutex_unlock(&current->thread_lock);
 		current = current->next;
 		if (current == philo_list)
 			break ;
@@ -94,10 +106,11 @@ void	join_and_destroy(t_philo *philo_list, t_data data)
 	{
 		tmp = current->next;
 		pthread_mutex_destroy(&current->fork);
+		pthread_mutex_destroy(&current->thread_lock);
 		free(current);
 		current = tmp;
 		if (current == philo_list)
 			break ;
 	}
-	pthread_mutex_destroy(&data.print);
+	destory_mutex(&data);
 }

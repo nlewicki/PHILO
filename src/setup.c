@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 12:32:22 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/07/28 18:40:00 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/07/29 12:10:16 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	check_input(int argc, char *argv[])
 	if (argc != 5 && argc != 6)
 		return (write(2, "Error: wrong number of arguments\n", 33), 1);
 	if (ft_atoi(argv[1]) <= 0 || atoi(argv[1]) > 200)
-		return (write(2, "Error: wrong number of philos\n", 37), 1);
+		return (write(2, "Error: wrong number of philos\n", 31), 1);
 	if (ft_atoi(argv[2]) <= 0)
 		return (write(2, "Error: wrong time to die\n", 26), 1);
 	if (ft_atoi(argv[3]) <= 0)
@@ -25,7 +25,7 @@ int	check_input(int argc, char *argv[])
 	if (ft_atoi(argv[4]) <= 0)
 		return (write(2, "Error: wrong time to sleep\n", 28), 1);
 	if (argc == 6 && ft_atoi(argv[5]) <= 0)
-		return (write(2, "Error: wrong number of philo meals\n", 55), 1);
+		return (write(2, "Error: wrong number of philo meals\n", 36), 1);
 	return (0);
 }
 
@@ -48,6 +48,11 @@ void	init_data(int argc, char *argv[], t_data *data)
 		data->total_meals = -1;
 	}
 	pthread_mutex_init(&data->print, NULL);
+	pthread_mutex_init(&data->lock, NULL);
+	pthread_mutex_init(&data->eating, NULL);
+	pthread_mutex_init(&data->alive_lock, NULL);
+	pthread_mutex_init(&data->check, NULL);
+	pthread_mutex_init(&data->time, NULL);
 }
 
 int	create_and_link_philos(t_data *data, t_philo **philo_list,
@@ -92,7 +97,9 @@ void	init_philo(t_data *data, t_philo **philo_list)
 	current = *philo_list;
 	while (current)
 	{
+		pthread_mutex_lock(&current->thread_lock);
 		pthread_create(&current->thread, NULL, routine, current);
+		pthread_mutex_unlock(&current->thread_lock);
 		current = current->next;
 		if (current == *philo_list)
 			break ;
@@ -111,6 +118,7 @@ t_philo	*create_philo(int id, t_data *data)
 	new_philo->last_meal = get_current_time();
 	new_philo->start_time = get_current_time();
 	pthread_mutex_init(&new_philo->fork, NULL);
+	pthread_mutex_init(&new_philo->thread_lock, NULL);
 	new_philo->next = NULL;
 	return (new_philo);
 }

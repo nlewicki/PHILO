@@ -6,7 +6,7 @@ files = src/philo.c \
 
 NAME = philo
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -I./include
+CFLAGS = -Wall -Wextra -Werror -I./include -g
 OFILES = $(files:.c=.o)
 
 $(NAME): $(OFILES)
