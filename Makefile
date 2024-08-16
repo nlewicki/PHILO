@@ -1,4 +1,4 @@
-files = src/philo.c \
+CFILES = src/philo.c \
 		src/helper.c \
 		src/checker.c \
 		src/setup.c \
@@ -7,17 +7,21 @@ files = src/philo.c \
 NAME = philo
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -I./include -g
-OFILES = $(files:.c=.o)
+OBJ_DIR = Obj
+OFILES = $(addprefix $(OBJ_DIR)/,$(notdir $(CFILES:.c=.o)))
 
-$(NAME): $(OFILES)
+$(NAME): $(OBJ_DIR) $(OFILES)
 	@$(CC) $(OFILES) -o $(NAME)
 	clear
 	@$(MAKE)	loading
 	clear
 	@echo "\033[32mphilos are ready to eat\033[0m"
 
-%.o: %.c
+$(OBJ_DIR)/%.o: src/%.c
 	@$(CC) -c $(CFLAGS) $< -o $@
+
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
 
 loading:
 		@for i in {1..42}; do \
@@ -28,6 +32,7 @@ loading:
 all: $(NAME)
 
 clean:
+	# @rm -rf $(OBJ_DIR)
 	@rm -f $(OFILES)
 	@echo "\033[33mclean\033[0m"
 

@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 10:58:15 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/07/29 11:03:31 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/16 11:40:23 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,12 @@ void	philo_eat(t_philo *philo)
 	print_msg(philo, "has taken a fork");
 	pthread_mutex_lock(&philo->data->lock);
 	philo->last_meal = get_current_time();
+	philo->meals_eaten++;
 	pthread_mutex_unlock(&philo->data->lock);
 	print_msg(philo, "is eating");
 	ft_usleep(philo->data->time_to_eat);
 	pthread_mutex_unlock(&philo->fork);
 	pthread_mutex_unlock(&philo->next->fork);
-	decrement_meals(philo);
 }
 
 void	philo_sleep(t_philo *philo)
@@ -49,9 +49,10 @@ void	*routine(void *arg)
 		print_msg(philo, "is thinking");
 		ft_usleep(philo->data->time_to_eat / 2);
 	}
-	while (check_health(philo) && philo->data->nb_philo > 1
-		&& check_meals(philo))
+	while (1)
 	{
+		if (!check_health(philo) || !check_meals(philo))
+			break ;
 		philo_eat(philo);
 		philo_sleep(philo);
 		philo_think(philo);
@@ -69,6 +70,7 @@ int	main(int argc, char *argv[])
 		return (0);
 	init_data(argc, argv, &data);
 	init_philo(&data, &philo_list);
+	ft_usleep(100);
 	watcher_routine(philo_list);
 	join_and_destroy(philo_list, data);
 	return (0);

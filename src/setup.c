@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 12:32:22 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/07/29 12:10:16 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/16 11:40:22 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,20 +39,12 @@ void	init_data(int argc, char *argv[], t_data *data)
 	if (argc == 6)
 	{
 		data->nb_time_each_philo_must_eat = ft_atoi(argv[5]);
-		data->total_meals = data->nb_time_each_philo_must_eat * data->nb_philo;
 		data->philos_done_eating = 0;
 	}
 	else
-	{
 		data->nb_time_each_philo_must_eat = -1;
-		data->total_meals = -1;
-	}
 	pthread_mutex_init(&data->print, NULL);
 	pthread_mutex_init(&data->lock, NULL);
-	pthread_mutex_init(&data->eating, NULL);
-	pthread_mutex_init(&data->alive_lock, NULL);
-	pthread_mutex_init(&data->check, NULL);
-	pthread_mutex_init(&data->time, NULL);
 }
 
 int	create_and_link_philos(t_data *data, t_philo **philo_list,
@@ -117,6 +109,7 @@ t_philo	*create_philo(int id, t_data *data)
 	new_philo->data = data;
 	new_philo->last_meal = get_current_time();
 	new_philo->start_time = get_current_time();
+	new_philo->meals_eaten = 0;
 	pthread_mutex_init(&new_philo->fork, NULL);
 	pthread_mutex_init(&new_philo->thread_lock, NULL);
 	new_philo->next = NULL;
