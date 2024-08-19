@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 12:34:55 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/16 11:40:25 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/19 11:45:16 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,20 +31,28 @@ int	check_health(t_philo *philo)
 {
 	int	alive;
 
+	printf("Debug: Entering check_health for Philo %d\n", philo->id);
 	pthread_mutex_lock(&philo->data->lock);
+	printf("Debug: Acquired lock in check_health for Philo %d\n", philo->id);
 	alive = philo->data->alive;
+	printf("Debug: check_health for Philo %d, alive = %d\n", philo->id, alive);
 	pthread_mutex_unlock(&philo->data->lock);
+	printf("Debug: Exiting check_health for Philo %d\n", philo->id);
 	return (alive);
 }
 
 int	check_meals(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->data->lock);
+	printf("Debug: In check_meals, meals_eaten: %d, required: %d\n",
+           philo->meals_eaten, philo->data->nb_time_each_philo_must_eat);
 	if (philo->data->nb_time_each_philo_must_eat != -1)
 	{
 		if (philo->meals_eaten >= philo->data->nb_time_each_philo_must_eat)
 		{
 			philo->data->philos_done_eating++;
+			printf("Debug: In check_meals, meals_eaten: %d, required: %d\n",
+           philo->meals_eaten, philo->data->nb_time_each_philo_must_eat);
 			if (philo->data->nb_philo == philo->data->philos_done_eating)
 			{
 				philo->data->alive = 0;
