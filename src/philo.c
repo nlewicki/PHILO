@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 10:58:15 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/19 11:43:55 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/19 13:04:45 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ void	philo_eat(t_philo *philo)
 	print_msg(philo, "has taken a fork");
 	pthread_mutex_lock(&philo->next->fork);
 	print_msg(philo, "has taken a fork");
-	pthread_mutex_lock(&philo->data->lock);
+	pthread_mutex_lock(&philo->data->eat);
 	philo->last_meal = get_current_time();
 	philo->meals_eaten++;
-	pthread_mutex_unlock(&philo->data->lock);
+	pthread_mutex_unlock(&philo->data->eat);
 	print_msg(philo, "is eating");
 	ft_usleep(philo->data->time_to_eat);
 	pthread_mutex_unlock(&philo->fork);
@@ -51,18 +51,14 @@ void	*routine(void *arg)
 	}
 	while (1)
 	{
-		printf("Debug: Philo %d before checks\n", philo->id);
         if (!check_health(philo))
         {
-            printf("Debug: Philo %d failed health check\n", philo->id);
             break;
         }
         if (!check_meals(philo))
         {
-            printf("Debug: Philo %d failed meals check\n", philo->id);
             break;
         }
-		printf("debug\n");
 		philo_eat(philo);
 		philo_sleep(philo);
 		philo_think(philo);
@@ -80,7 +76,6 @@ int	main(int argc, char *argv[])
 		return (0);
 	init_data(argc, argv, &data);
 	init_philo(&data, &philo_list);
-	printf("Debug: Philosophers initialized\n");
 	ft_usleep(100);
 	watcher_routine(philo_list);
 	join_and_destroy(philo_list, data);
