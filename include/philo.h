@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 10:58:25 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/21 12:06:29 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/21 12:40:46 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ int		create_and_link_philos(t_data *data, t_philo **philo_list,
 			t_philo *current, t_philo *tmp);
 void	init_philo(t_data *data, t_philo **philo_list);
 int		check_philo(t_philo *philo);
-int		watcher_routine(t_philo *philo);
+void	*watcher_routine(void *philo);
 void	join_and_destroy(t_philo *philo_list, t_data data);
 
 #endif

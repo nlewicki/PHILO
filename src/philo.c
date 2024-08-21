@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 10:58:15 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/21 12:07:12 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/21 12:38:06 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,6 @@ int	main(int argc, char *argv[])
 	init_data(argc, argv, &data);
 	init_philo(&data, &philo_list);
 	ft_usleep(100);
-	watcher_routine(philo_list);
 	join_and_destroy(philo_list, data);
 	return (0);
 }

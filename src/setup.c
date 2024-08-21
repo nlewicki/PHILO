@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 12:32:22 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/21 12:14:09 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/21 12:46:47 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,13 +79,15 @@ int	create_and_link_philos(t_data *data, t_philo **philo_list,
 
 void	init_philo(t_data *data, t_philo **philo_list)
 {
-	t_philo	*current;
-	t_philo	*tmp;
+	t_philo		*current;
+	t_philo		*tmp;
+	pthread_t	watcher_t;
 
 	current = NULL;
 	tmp = NULL;
 	if (create_and_link_philos(data, philo_list, current, tmp) == -1)
 		return ;
+	pthread_create(&watcher_t, NULL, watcher_routine, *philo_list);
 	current = *philo_list;
 	while (current)
 	{
@@ -94,6 +96,7 @@ void	init_philo(t_data *data, t_philo **philo_list)
 		if (current == *philo_list)
 			break ;
 	}
+	pthread_join(watcher_t, NULL);
 }
 
 t_philo	*create_philo(int id, t_data *data)
@@ -112,7 +115,6 @@ t_philo	*create_philo(int id, t_data *data)
 	new_philo->r_fork = data->forks[id % data->nb_philo];
 	pthread_mutex_init(&new_philo->l_fork, NULL);
 	pthread_mutex_init(&new_philo->r_fork, NULL);
-	pthread_mutex_init(&new_philo->thread_lock, NULL);
 	new_philo->next = NULL;
 	return (new_philo);
 }
