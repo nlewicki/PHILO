@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 12:32:22 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/16 11:40:22 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/21 12:14:09 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,9 +89,7 @@ void	init_philo(t_data *data, t_philo **philo_list)
 	current = *philo_list;
 	while (current)
 	{
-		pthread_mutex_lock(&current->thread_lock);
 		pthread_create(&current->thread, NULL, routine, current);
-		pthread_mutex_unlock(&current->thread_lock);
 		current = current->next;
 		if (current == *philo_list)
 			break ;
@@ -110,7 +108,10 @@ t_philo	*create_philo(int id, t_data *data)
 	new_philo->last_meal = get_current_time();
 	new_philo->start_time = get_current_time();
 	new_philo->meals_eaten = 0;
-	pthread_mutex_init(&new_philo->fork, NULL);
+	new_philo->l_fork = data->forks[id - 1];
+	new_philo->r_fork = data->forks[id % data->nb_philo];
+	pthread_mutex_init(&new_philo->l_fork, NULL);
+	pthread_mutex_init(&new_philo->r_fork, NULL);
 	pthread_mutex_init(&new_philo->thread_lock, NULL);
 	new_philo->next = NULL;
 	return (new_philo);

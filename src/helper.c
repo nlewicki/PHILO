@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 12:29:33 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/16 11:40:24 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/21 12:16:44 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,8 +101,10 @@ void	join_and_destroy(t_philo *philo_list, t_data data)
 	while (current)
 	{
 		tmp = current->next;
-		pthread_mutex_destroy(&current->fork);
+		pthread_mutex_destroy(&current->l_fork);
+		pthread_mutex_destroy(&current->r_fork);
 		pthread_mutex_destroy(&current->thread_lock);
+		// free(data.forks);
 		free(current);
 		current = tmp;
 		if (current == philo_list)

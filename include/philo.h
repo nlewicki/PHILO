@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 10:58:25 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/19 12:26:37 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/21 12:06:29 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ typedef struct s_data
 	int				time_to_sleep;
 	int				nb_time_each_philo_must_eat;
 	int				philos_done_eating;
+	pthread_mutex_t	*forks;
 	pthread_mutex_t	eat;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	print;
@@ -40,7 +41,8 @@ typedef struct s_philo
 	size_t			last_meal;
 	size_t			start_time;
 	int				meals_eaten;
-	pthread_mutex_t	fork;
+	pthread_mutex_t	l_fork;
+	pthread_mutex_t	r_fork;
 	pthread_mutex_t	thread_lock;
 	t_data			*data;
 	struct s_philo	*next;
