@@ -6,17 +6,17 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 10:58:15 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/21 14:02:58 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/23 10:22:15 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	philo_eat(t_philo *philo)
+void philo_eat(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->l_fork);
+	pthread_mutex_lock(philo->l_fork);
 	print_msg(philo, "has taken a fork");
-	pthread_mutex_lock(&philo->r_fork);
+	pthread_mutex_lock(philo->r_fork);
 	print_msg(philo, "has taken a fork");
 	pthread_mutex_lock(&philo->data->eat);
 	philo->last_meal = get_current_time();
@@ -24,8 +24,8 @@ void	philo_eat(t_philo *philo)
 	pthread_mutex_unlock(&philo->data->eat);
 	print_msg(philo, "is eating");
 	ft_usleep(philo->data->time_to_eat);
-	pthread_mutex_unlock(&philo->l_fork);
-	pthread_mutex_unlock(&philo->r_fork);
+	pthread_mutex_unlock(philo->r_fork);
+	pthread_mutex_unlock(philo->l_fork);
 }
 
 void	philo_sleep(t_philo *philo)
@@ -81,7 +81,8 @@ int	main(int argc, char *argv[])
 	if (check_input(argc, argv))
 		return (0);
 	data.forks = malloc(sizeof(pthread_mutex_t) * ft_atoi(argv[1]));
-	init_fork_mutex(data);
+	if (init_fork_mutex(data) != 0)
+		return (1);
 	init_data(argc, argv, &data);
 	init_philo(&data, &philo_list);
 	ft_usleep(100);
