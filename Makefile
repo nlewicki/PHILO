@@ -3,6 +3,7 @@ CFILES = src/philo.c \
 		src/checker.c \
 		src/setup.c \
 		src/watcher.c \
+		src/cleanup.c \
 
 NAME = philo
 CC = cc

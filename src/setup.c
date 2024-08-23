@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 12:32:22 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/23 10:21:11 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/23 11:59:14 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,82 +37,70 @@ void	init_data(int argc, char *argv[], t_data *data)
 	data->time_to_sleep = ft_atoi(argv[4]);
 	data->alive = 1;
 	if (argc == 6)
-	{
 		data->nb_time_each_philo_must_eat = ft_atoi(argv[5]);
-		data->philos_done_eating = 0;
-	}
 	else
 		data->nb_time_each_philo_must_eat = -1;
 	pthread_mutex_init(&data->print, NULL);
 	pthread_mutex_init(&data->lock, NULL);
+	pthread_mutex_init(&data->eat, NULL);
 }
 
-int	create_and_link_philos(t_data *data, t_philo **philo_list,
-	t_philo *current, t_philo *tmp)
+int	init_philo(t_data *data, t_philo *philo_list, pthread_t *thread)
 {
-	int		i;
-	t_philo	*new_philo;
+	int	i;
 
-	i = 1;
-	while (i <= data->nb_philo)
+	i = 0;
+	while (i < data->nb_philo)
 	{
-		new_philo = create_philo(i, data);
-		if (!new_philo)
-		{
-			while (*philo_list)
-			{
-				tmp = (*philo_list)->next;
-				free(*philo_list);
-				*philo_list = tmp;
-			}
-			return (-1);
-		}
-		if (!*philo_list)
-			*philo_list = new_philo;
-		else
-			current->next = new_philo;
-		current = new_philo;
+		philo_list[i].id = i + 1;
+		philo_list[i].data = data;
+		philo_list[i].last_meal = get_current_time();
+		philo_list[i].start_time = get_current_time();
+		philo_list[i].meals_eaten = 0;
+		philo_list[i].thread = thread[i];
+		philo_list[i].l_fork = &data->forks[i];
+		philo_list[i].r_fork = &data->forks[(i + 1) % data->nb_philo];
 		i++;
 	}
-	return (current->next = *philo_list, 0);
+	return (0);
 }
 
-void	init_philo(t_data *data, t_philo **philo_list)
+int	init_fork_mutex(t_data *data)
 {
-	t_philo		*current;
-	t_philo		*tmp;
-	pthread_t	watcher_t;
+	int	i;
 
-	current = NULL;
-	tmp = NULL;
-	if (create_and_link_philos(data, philo_list, current, tmp) == -1)
-		return ;
-	pthread_create(&watcher_t, NULL, watcher_routine, *philo_list);
-	current = *philo_list;
-	while (current)
+	i = 0;
+	while (i < data->nb_philo)
 	{
-		pthread_create(&current->thread, NULL, routine, current);
-		current = current->next;
-		if (current == *philo_list)
-			break ;
+		if (pthread_mutex_init(&data->forks[i], NULL) != 0)
+			return (1);
+		i++;
 	}
-	pthread_join(watcher_t, NULL);
+	return (0);
 }
 
-t_philo	*create_philo(int id, t_data *data)
+int	init_threads(t_philo *philo)
 {
-	t_philo	*new_philo;
+	int			i;
+	pthread_t	watcher;
 
-	new_philo = malloc(sizeof(t_philo));
-	if (!new_philo)
-		return (NULL);
-	new_philo->id = id;
-	new_philo->data = data;
-	new_philo->last_meal = get_current_time();
-	new_philo->start_time = get_current_time();
-	new_philo->meals_eaten = 0;
-	new_philo->l_fork = &data->forks[(id - 1) % data->nb_philo];
-	new_philo->r_fork = &data->forks[id % data->nb_philo];
-	new_philo->next = NULL;
-	return (new_philo);
+	i = 0;
+	if (pthread_mutex_init(&philo->data->lock, NULL) != 0)
+		return (1);
+	if (pthread_mutex_init(&philo->data->print, NULL) != 0)
+		return (1);
+	if (pthread_mutex_init(&philo->data->eat, NULL) != 0)
+		return (1);
+	if (pthread_create(&watcher, NULL, watcher_routine, philo->data) != 0)
+		return (1);
+	while (i < philo->data->nb_philo)
+	{
+		if (pthread_create(&philo[i].thread, NULL, routine, &philo[i])
+			!= 0)
+			return (1);
+		i++;
+	}
+	if (pthread_join(watcher, NULL) != 0)
+		return (1);
+	return (0);
 }

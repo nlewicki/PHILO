@@ -6,13 +6,13 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 10:58:15 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/23 10:22:15 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/23 11:59:05 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void philo_eat(t_philo *philo)
+void	philo_eat(t_philo *philo)
 {
 	pthread_mutex_lock(philo->l_fork);
 	print_msg(philo, "has taken a fork");
@@ -49,7 +49,7 @@ void	*routine(void *arg)
 		print_msg(philo, "is thinking");
 		ft_usleep(philo->data->time_to_eat / 2);
 	}
-	while (check_health(philo) == 1)
+	while (check_health(philo->data) == 1)
 	{
 		philo_eat(philo);
 		philo_sleep(philo);
@@ -58,34 +58,23 @@ void	*routine(void *arg)
 	return (NULL);
 }
 
-int	init_fork_mutex(t_data data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data.nb_philo)
-	{
-		if (pthread_mutex_init(&data.forks[i], NULL) != 0)
-			return (1);
-		i++;
-	}
-	return (0);
-}
-
 int	main(int argc, char *argv[])
 {
-	t_data	data;
-	t_philo	*philo_list;
+	t_data			data;
+	t_philo			*philo_list;
+	pthread_t		*threads;
 
-	philo_list = NULL;
 	if (check_input(argc, argv))
 		return (0);
-	data.forks = malloc(sizeof(pthread_mutex_t) * ft_atoi(argv[1]));
-	if (init_fork_mutex(data) != 0)
-		return (1);
 	init_data(argc, argv, &data);
-	init_philo(&data, &philo_list);
-	ft_usleep(100);
-	join_and_destroy(philo_list, data);
+	data.forks = malloc(sizeof(pthread_mutex_t) * ft_atoi(argv[1]));
+	philo_list = malloc(sizeof(t_philo) * data.nb_philo);
+	threads = malloc(sizeof(pthread_t) * data.nb_philo);
+	init_philo(&data, philo_list, threads);
+	data.philo_list = philo_list;
+	if (init_fork_mutex(&data) != 0)
+		return (1);
+	init_threads(philo_list);
+	cleanup(&data, philo_list, threads);
 	return (0);
 }

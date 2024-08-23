@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 12:31:13 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/23 10:07:05 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/23 11:56:37 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,22 +28,15 @@ int	check_philo(t_philo *philo)
 	return (result);
 }
 
-void	*watcher_routine(void *philo)
+void	*watcher_routine(void *arg)
 {
-	t_philo	*current;
+	t_data	*data;
 
-	current = (t_philo *)philo;
-	while (check_health(current) == 1)
+	data = (t_data *)arg;
+	while (check_health(data) == 1)
 	{
-		current = (t_philo *)philo;
-		while (current)
-		{
-			if (!check_philo(current) || !check_meals(current))
-				break ;
-			current = current->next;
-			if (current == (t_philo *)philo)
-				break ;
-		}
+		if (check_meals(data) == 0 || check_philo(data->philo_list) == 0)
+			break ;
 	}
 	return (NULL);
 }

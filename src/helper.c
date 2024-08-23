@@ -6,11 +6,24 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 12:29:33 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/23 10:22:51 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/23 11:17:47 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	print_msg(t_philo *philo, char *str)
+{
+	size_t	time;
+
+	pthread_mutex_lock(&philo->data->print);
+	time = get_current_time() - philo->start_time;
+	if (check_health(philo->data))
+	{
+		printf("%zu %d %s\n", time, philo->id, str);
+	}
+	pthread_mutex_unlock(&philo->data->print);
+}
 
 int	ft_atoi(const char *str)
 {
@@ -57,38 +70,21 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
-void	destory_mutex(t_data *data)
+size_t	get_current_time(void)
 {
-	pthread_mutex_destroy(&data->print);
-	pthread_mutex_destroy(&data->lock);
+	struct timeval	time;
+
+	if (gettimeofday(&time, NULL) == -1)
+		write(2, "gettimeofday() error\n", 22);
+	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
-void	join_and_destroy(t_philo *philo_list, t_data data)
+int	ft_usleep(size_t milliseconds)
 {
-	t_philo	*current;
-	t_philo	*tmp;
-	int i;
+	size_t	start;
 
-	i = data.nb_philo;
-	i *= data.nb_time_each_philo_must_eat;
-	current = philo_list;
-	while (current)
-	{
-		pthread_join(current->thread, NULL);
-		current = current->next;
-		if (current == philo_list)
-			break ;
-	}
-	current = philo_list;
-	while (current)
-	{
-		tmp = current->next;
-		pthread_mutex_destroy(current->l_fork);
-		pthread_mutex_destroy(current->r_fork);
-		free(current);
-		current = tmp;
-		if (current == philo_list)
-			break ;
-	}
-	// destory_mutex(&data);
+	start = get_current_time();
+	while ((get_current_time() - start) < milliseconds)
+		usleep(500);
+	return (0);
 }
