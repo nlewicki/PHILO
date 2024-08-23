@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 12:29:33 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/21 13:06:20 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/21 13:47:49 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,10 @@ void	join_and_destroy(t_philo *philo_list, t_data data)
 {
 	t_philo	*current;
 	t_philo	*tmp;
+	int i;
 
+	i = data.nb_philo;
+	i *= data.nb_time_each_philo_must_eat;
 	current = philo_list;
 	while (current)
 	{
@@ -87,5 +90,5 @@ void	join_and_destroy(t_philo *philo_list, t_data data)
 		if (current == philo_list)
 			break ;
 	}
-	destory_mutex(&data);
+	// destory_mutex(&data);
 }

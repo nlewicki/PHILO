@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 12:34:55 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/21 13:08:33 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/23 10:07:11 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,16 @@ void	print_msg(t_philo *philo, char *str)
 		printf("%zu %d %s\n", time, philo->id, str);
 	}
 	pthread_mutex_unlock(&philo->data->print);
+}
+
+int	check_health(t_philo *philo)
+{
+	int	alive;
+
+	pthread_mutex_lock(&philo->data->lock);
+	alive = philo->data->alive;
+	pthread_mutex_unlock(&philo->data->lock);
+	return (alive);
 }
 
 int	check_meals(t_philo *philo)

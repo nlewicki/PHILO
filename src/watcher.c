@@ -6,21 +6,11 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 12:31:13 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/21 12:44:29 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/23 10:07:05 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-int	check_health(t_philo *philo)
-{
-	int	alive;
-
-	pthread_mutex_lock(&philo->data->lock);
-	alive = philo->data->alive;
-	pthread_mutex_unlock(&philo->data->lock);
-	return (alive);
-}
 
 int	check_philo(t_philo *philo)
 {

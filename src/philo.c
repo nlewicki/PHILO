@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 10:58:15 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/21 12:38:06 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/21 14:02:58 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,20 @@ void	*routine(void *arg)
 	return (NULL);
 }
 
+int	init_fork_mutex(t_data data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data.nb_philo)
+	{
+		if (pthread_mutex_init(&data.forks[i], NULL) != 0)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
 int	main(int argc, char *argv[])
 {
 	t_data	data;
@@ -67,6 +81,7 @@ int	main(int argc, char *argv[])
 	if (check_input(argc, argv))
 		return (0);
 	data.forks = malloc(sizeof(pthread_mutex_t) * ft_atoi(argv[1]));
+	init_fork_mutex(data);
 	init_data(argc, argv, &data);
 	init_philo(&data, &philo_list);
 	ft_usleep(100);

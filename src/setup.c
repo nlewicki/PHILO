@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 12:32:22 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/21 12:46:47 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/21 14:09:04 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,8 +113,6 @@ t_philo	*create_philo(int id, t_data *data)
 	new_philo->meals_eaten = 0;
 	new_philo->l_fork = data->forks[id - 1];
 	new_philo->r_fork = data->forks[id % data->nb_philo];
-	pthread_mutex_init(&new_philo->l_fork, NULL);
-	pthread_mutex_init(&new_philo->r_fork, NULL);
 	new_philo->next = NULL;
 	return (new_philo);
 }

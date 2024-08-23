@@ -32,7 +32,7 @@ loading:
 all: $(NAME)
 
 clean:
-	# @rm -rf $(OBJ_DIR)
+	@rm -rf $(OBJ_DIR)
 	@rm -f $(OFILES)
 	@echo "\033[33mclean\033[0m"
 
