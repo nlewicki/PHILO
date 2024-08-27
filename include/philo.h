@@ -6,7 +6,7 @@
 /*   By: nlewicki <nlewicki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 10:58:25 by nlewicki          #+#    #+#             */
-/*   Updated: 2024/08/23 12:02:25 by nlewicki         ###   ########.fr       */
+/*   Updated: 2024/08/27 15:50:08 by nlewicki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,6 @@ int		init_philo(t_data *data, t_philo *philo_list, pthread_t *thread);
 int		init_fork_mutex(t_data *data);
 int		init_threads(t_philo *philo);
 
-void	destory_mutex(t_data *data);
 void	cleanup(t_data *data, t_philo *philo_list, pthread_t *threads);
 
 #endif
